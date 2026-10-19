@@ -1,0 +1,33 @@
+services:
+  rewe-mcp:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "47823:47823"   # MCP für Claude
+      - "6080:6080"     # noVNC: REWE-Login im Server-Browser (http://<server>:6080/vnc.html)
+    environment:
+      REWE_MCP_PASSWORD: ${REWE_MCP_PASSWORD:?REWE_MCP_PASSWORD in .env setzen}
+      REWE_VNC_PASSWORD: ${REWE_VNC_PASSWORD:?REWE_VNC_PASSWORD in .env setzen}
+      REWE_LOGIN_URL: ${REWE_LOGIN_URL:-http://localhost:6080/vnc.html}
+      REWE_PUBLIC_URL: ${REWE_PUBLIC_URL:-}   # öffentliche Adresse → aktiviert OAuth (z.B. für claude.ai)
+      REWE_BACKEND: ${REWE_BACKEND:-browser}   # "extension" = Chrome-Extension auf dem PC statt Container-Chrome
+      REWE_KEEPALIVE_MIN: ${REWE_KEEPALIVE_MIN:-4}
+      REWE_MCP_DEBUG: ${REWE_MCP_DEBUG:-0}
+    volumes:
+      - rewe-profile:/data   # Chrome-Profil inkl. REWE-Anmeldung, übersteht Neustarts
+    shm_size: "1gb"         # Chrome braucht mehr Shared Memory als Dockers Standard
+    init: true              # räumt beendete Chrome-Prozesse auf
+
+  # Zugang aus dem Internet über Cloudflare Tunnel (nur aktiv mit COMPOSE_PROFILES=tunnel in .env)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - rewe-mcp
+    profiles: ["tunnel"]
+
+volumes:
+  rewe-profile:

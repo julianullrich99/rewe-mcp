@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>REWE Kilopreis – Einstellungen</title>
+  <style>
+    body { font: 14px/1.5 system-ui, "Segoe UI", sans-serif; max-width: 460px; margin: 24px; color: #1a1a1a; }
+    h1 { font-size: 18px; color: #cc071e; }
+    label { display: grid; gap: 4px; margin-bottom: 14px; font-weight: 600; }
+    input { font: inherit; padding: 6px 8px; border: 1px solid #bbb; border-radius: 6px; }
+    small { font-weight: 400; color: #666; }
+    button { font: inherit; font-weight: 600; padding: 7px 14px; border: none; border-radius: 6px; background: #cc071e; color: #fff; cursor: pointer; }
+    #status { margin-top: 16px; padding: 8px 10px; border-radius: 6px; background: #f2f2f2; }
+    #status.ok { background: #e3f4e8; color: #1b7f3b; }
+  </style>
+</head>
+<body>
+  <h1>MCP-Server-Verbindung</h1>
+  <label>Server-Adresse
+    <input id="serverUrl" placeholder="http://192.168.1.10:47823" />
+    <small>Adresse deines MCP-Servers, z.B. <code>http://192.168.1.10:47823</code>. Lokal: <code>http://127.0.0.1:47823</code></small>
+  </label>
+  <label>Passwort
+    <input id="password" type="password" autocomplete="off" />
+    <small>Dasselbe wie <code>REWE_MCP_PASSWORD</code> auf dem Server.</small>
+  </label>
+  <button id="save">Speichern &amp; verbinden</button>
+  <div id="status">Status: –</div>
+  <script src="options.js"></script>
+</body>
+</html>

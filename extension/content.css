@@ -1,0 +1,78 @@
+.rkp-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483000;
+  width: 240px;
+  background: #fff;
+  color: #1a1a1a;
+  border: 2px solid #cc071e;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.rkp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #cc071e;
+  color: #fff;
+  border-radius: 7px 7px 0 0;
+}
+.rkp-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}
+.rkp-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+.rkp-collapsed .rkp-body { display: none; }
+.rkp-body label {
+  display: grid;
+  gap: 2px;
+  font-weight: 600;
+}
+.rkp-body select,
+.rkp-body input {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+.rkp-run {
+  font: inherit;
+  font-weight: 600;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: #cc071e;
+  color: #fff;
+  cursor: pointer;
+}
+.rkp-run:hover { background: #a30518; }
+.rkp-status {
+  font-size: 12px;
+  color: #555;
+}
+.rkp-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 5;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #1b7f3b;
+  color: #fff;
+  font: 600 12px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  pointer-events: none;
+}
+.rkp-badge--none { background: #888; }
+div[id^="plr-"][class*="product-tile"] { position: relative; }
+.rkp-hidden { display: none !important; }

@@ -1,0 +1,19 @@
+{
+  "name": "rewe-mcp",
+  "version": "2.0.0",
+  "description": "MCP-Server für den REWE Onlineshop: Produktsuche nach €/kg, Warenkorb, Bestellhistorie – für Claude & Co.",
+  "type": "module",
+  "main": "http-server.js",
+  "scripts": {
+    "start": "node http-server.js",
+    "start:stdio": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "node-html-parser": "^7.1.0",
+    "playwright": "1.64.0",
+    "ws": "^8.18.0",
+    "zod": "^3.25.0"
+  },
+  "private": true
+}
