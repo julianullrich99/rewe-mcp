@@ -93,9 +93,11 @@ function send(res, status, body) {
 const httpServer = http.createServer(async (req, res) => {
   const path = new URL(req.url, "http://x").pathname;
 
-  // Über Cloudflare Tunnel (erkennbar am Header cf-connecting-ip) ist nur /mcp erreichbar –
-  // Status, Login-Seite und Debug bleiben im Heimnetz, auch wenn die Pfadregel im Tunnel fehlt.
-  if (req.headers["cf-connecting-ip"] && !PUBLIC_PATHS.has(path)) return send(res, 404, { error: "not found" });
+  // Anfragen über einen Reverse-Proxy (Traefik, Caddy, nginx: X-Forwarded-For) oder Cloudflare Tunnel
+  // (cf-connecting-ip) gelten als "von außen": dort sind nur /mcp und die OAuth-Endpunkte erreichbar.
+  // Status, Login-Hilfe und Debug bleiben im Heimnetz (direkter Zugriff auf Port 47823).
+  const viaProxy = req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.headers["forwarded"];
+  if (viaProxy && !PUBLIC_PATHS.has(path)) return send(res, 404, { error: "not found" });
 
   if (oauth && (await oauth.handle(req, res, path, () => readRaw(req)))) return;
 

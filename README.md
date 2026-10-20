@@ -130,7 +130,7 @@ Am einfachsten geht es mit einem Cloudflare Tunnel. Du brauchst keine offenen Po
 
 Über den Tunnel sind **nur** `/mcp` und die OAuth-Endpunkte erreichbar. Fernansicht, Status und Login-Hilfe bleiben im Heimnetz. Das prüft der Server selbst, auch ohne passende Pfadregel in Cloudflare.
 
-Ein anderer Reverse-Proxy (Traefik, Caddy, nginx) funktioniert genauso. Leite dann nur `/mcp`, `/.well-known/oauth-*`, `/authorize`, `/token` und `/register` weiter.
+Ein anderer Reverse-Proxy (Traefik, Caddy, nginx) funktioniert genauso. Der Server erkennt Anfragen über einen Proxy am Header `X-Forwarded-For` und lässt dann ebenfalls nur `/mcp` und die OAuth-Endpunkte durch. Den Port `6080` (noVNC) nicht über den Proxy freigeben.
 
 ---
 
