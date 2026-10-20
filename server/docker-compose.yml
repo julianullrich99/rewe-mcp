@@ -1,3 +1,6 @@
+# Fester Projektname: Container und Volume (rewe-mcp_rewe-profile) bleiben gleich, egal in welchem Ordner
+name: rewe-mcp
+
 services:
   rewe-mcp:
     build: .
