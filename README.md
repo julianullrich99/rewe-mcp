@@ -52,15 +52,21 @@ flowchart LR
 
 Voraussetzungen: ein Linux-Server mit Docker und Docker Compose, etwa 1 GB RAM für Chrome und ein REWE-Konto.
 
+Du brauchst nur einen Ordner mit [`compose.yaml`](compose.yaml) und einer `.env`. Den Code baut Docker direkt aus diesem Repo:
+
 ```bash
-git clone https://github.com/julianullrich99/rewe-mcp.git
-cd rewe-mcp/server
-cp .env.example .env
+mkdir rewe-mcp && cd rewe-mcp
+curl -fsSLO https://raw.githubusercontent.com/julianullrich99/rewe-mcp/main/compose.yaml
+curl -fsSL https://raw.githubusercontent.com/julianullrich99/rewe-mcp/main/.env.example -o .env
 nano .env             # REWE_MCP_PASSWORD, REWE_VNC_PASSWORD, REWE_LOGIN_URL setzen
 docker compose up -d --build
 ```
 
-Der erste Build lädt das Playwright-Image mit Chrome, rund 2 GB.
+Der erste Build lädt das Playwright-Image mit Chrome, rund 2 GB. **Update:** `docker compose up -d --build` holt den aktuellen Stand von GitHub.
+
+### Dockge / Portainer
+
+Neuen Stack `rewe-mcp` anlegen, den Inhalt von [`compose.yaml`](compose.yaml) einfügen und die Variablen aus [`.env.example`](.env.example) eintragen. Mit **Traefik** nimmst du stattdessen [`compose.traefik.yaml`](compose.traefik.yaml). Sie nutzt Labels (`ROUTER_NAME`, `DOMAIN` in der `.env`) und das externe Netz `traefik`. Der Projektname ist fest auf `rewe-mcp` gesetzt. Deshalb bleibt das Volume mit der REWE-Anmeldung erhalten, auch wenn du den Stack neu anlegst.
 
 ### Bei REWE anmelden
 
@@ -130,7 +136,7 @@ Am einfachsten geht es mit einem Cloudflare Tunnel. Du brauchst keine offenen Po
 
 Über den Tunnel sind **nur** `/mcp` und die OAuth-Endpunkte erreichbar. Fernansicht, Status und Login-Hilfe bleiben im Heimnetz. Das prüft der Server selbst, auch ohne passende Pfadregel in Cloudflare.
 
-Ein anderer Reverse-Proxy (Traefik, Caddy, nginx) funktioniert genauso. Der Server erkennt Anfragen über einen Proxy am Header `X-Forwarded-For` und lässt dann ebenfalls nur `/mcp` und die OAuth-Endpunkte durch. Den Port `6080` (noVNC) nicht über den Proxy freigeben.
+Ein anderer Reverse-Proxy funktioniert genauso. Für Traefik gibt es die fertige [`compose.traefik.yaml`](compose.traefik.yaml). Der Server erkennt Anfragen über einen Proxy am Header `X-Forwarded-For` und lässt dann ebenfalls nur `/mcp` und die OAuth-Endpunkte durch. Den Port `6080` (noVNC) nicht über den Proxy freigeben.
 
 ---
 
@@ -189,7 +195,10 @@ server/
 ├── lib.js           MCP-Tool-Definitionen, Extension-Brücke
 ├── server.js        Alternative: stdio-Server für lokale Nutzung mit der Extension
 ├── start.sh         Xvfb + noVNC + Server im Container
-└── Dockerfile, docker-compose.yml, .env.example
+└── Dockerfile
+compose.yaml         Stack (baut direkt aus GitHub)
+compose.traefik.yaml Stack hinter Traefik (Labels)
+.env.example         Vorlage für die Konfiguration
 extension/           Chrome-Extension (Kilopreis-Sortierung + optionale Brücke)
 ```
 

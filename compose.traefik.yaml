@@ -1,0 +1,48 @@
+# rewe-mcp hinter Traefik (externes Docker-Netz "traefik", Certresolver "letsencrypt").
+# Für Dockge: als compose.yaml in den Stack-Ordner kopieren, dazu eine .env mit
+#   ROUTER_NAME=rewe-mcp
+#   DOMAIN=rewe.example.com
+#   REWE_PUBLIC_URL=https://rewe.example.com
+# Der Server lässt über den Proxy nur /mcp und die OAuth-Endpunkte durch (erkennt X-Forwarded-For).
+name: rewe-mcp
+
+services:
+  rewe-mcp:
+    build:
+      context: https://github.com/julianullrich99/rewe-mcp.git#main:server
+    image: rewe-mcp:latest
+    restart: unless-stopped
+    networks:
+      - traefik
+    ports:
+      - "47823:47823"   # direkter Zugang im Heimnetz (Claude Code/Desktop, /health)
+      - "6080:6080"     # noVNC: REWE-Login im Server-Browser – NICHT über Traefik freigeben
+    environment:
+      REWE_MCP_PASSWORD: ${REWE_MCP_PASSWORD:?REWE_MCP_PASSWORD in .env setzen}
+      REWE_VNC_PASSWORD: ${REWE_VNC_PASSWORD:?REWE_VNC_PASSWORD in .env setzen}
+      REWE_LOGIN_URL: ${REWE_LOGIN_URL:-http://localhost:6080/vnc.html}
+      REWE_PUBLIC_URL: ${REWE_PUBLIC_URL:?REWE_PUBLIC_URL in .env setzen (https://…)}
+      REWE_KEEPALIVE_MIN: ${REWE_KEEPALIVE_MIN:-4}
+      REWE_MCP_DEBUG: ${REWE_MCP_DEBUG:-0}
+    volumes:
+      - rewe-profile:/data
+    shm_size: "1gb"
+    init: true
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}.entrypoints=websecure
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}.rule=Host(`${DOMAIN:?DOMAIN in .env setzen}`)
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}_insecure.entrypoints=web
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}_insecure.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${ROUTER_NAME:-rewe-mcp}_insecure.middlewares=redirect-to-https@file
+      - traefik.http.services.${ROUTER_NAME:-rewe-mcp}.loadbalancer.server.port=47823
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  rewe-profile:
+
